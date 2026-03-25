@@ -85,6 +85,7 @@ Outputs saved to `output/annotated.jpg` and `output/pipeline_grid.jpg`.
 Download from Kaggle: https://www.kaggle.com/datasets/kaustubhdikshit/neu-surface-defect-database
 
 Organise:
+
 ```
 data/
   train/
@@ -98,6 +99,7 @@ data/
 ```
 
 Train:
+
 ```bash
 python train.py \
   --data_dir data \
@@ -123,6 +125,7 @@ MODEL_CHECKPOINT=checkpoints/best_model.pt uvicorn api.server:app --port 8000
 Then open http://localhost:8000/docs for interactive Swagger UI.
 
 **Example cURL:**
+
 ```bash
 curl -X POST http://localhost:8000/predict \
   -F "file=@steel_sample.jpg" \
@@ -135,13 +138,14 @@ curl -X POST http://localhost:8000/predict \
 ## API Reference
 
 | Method | Endpoint         | Description                          |
-|--------|------------------|--------------------------------------|
+| ------ | ---------------- | ------------------------------------ |
 | GET    | `/health`        | Liveness check + model status        |
 | GET    | `/classes`       | List of 6 defect class names         |
 | POST   | `/predict`       | Single image → JSON + annotated JPEG |
 | POST   | `/predict/batch` | Up to 16 images in one request       |
 
 **POST /predict** query params:
+
 - `edge_threshold` (int, 5–200, default 40) — Sobel sensitivity
 - `return_gradcam` (bool, default true) — include Grad-CAM heatmap
 
@@ -149,15 +153,15 @@ curl -X POST http://localhost:8000/predict \
 
 ## OpenCV Pipeline Details
 
-| Step | Method | Purpose |
-|------|--------|---------|
-| Grayscale | `cvtColor` | Remove colour noise |
-| CLAHE | `createCLAHE(clip=2.0, grid=8×8)` | Enhance low-contrast surface features |
-| Denoise | `GaussianBlur(5×5)` | Suppress sensor/grain noise |
-| Edge detect | `Sobel(ksize=3)` X+Y combined | Highlight surface discontinuities |
-| Threshold | `THRESH_BINARY + THRESH_OTSU` | Binarise edge map adaptively |
-| Morphology | `MORPH_CLOSE` then `MORPH_OPEN` | Fill gaps, remove specks |
-| Blob extract | `findContours` | Locate candidate defect regions |
+| Step         | Method                            | Purpose                               |
+| ------------ | --------------------------------- | ------------------------------------- |
+| Grayscale    | `cvtColor`                        | Remove colour noise                   |
+| CLAHE        | `createCLAHE(clip=2.0, grid=8×8)` | Enhance low-contrast surface features |
+| Denoise      | `GaussianBlur(5×5)`               | Suppress sensor/grain noise           |
+| Edge detect  | `Sobel(ksize=3)` X+Y combined     | Highlight surface discontinuities     |
+| Threshold    | `THRESH_BINARY + THRESH_OTSU`     | Binarise edge map adaptively          |
+| Morphology   | `MORPH_CLOSE` then `MORPH_OPEN`   | Fill gaps, remove specks              |
+| Blob extract | `findContours`                    | Locate candidate defect regions       |
 
 ---
 
@@ -178,3 +182,10 @@ pytest tests/ -v
 ```
 
 All 12 tests pass without a dataset or checkpoint (uses synthetic tensors/images).
+
+---
+
+## Author
+
+**Eka Gunawan**
+© 2026 Eka Gunawan. All rights reserved.

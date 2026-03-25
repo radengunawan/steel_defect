@@ -21,6 +21,7 @@ Output
   output/pipeline_grid.jpg — all OpenCV intermediate stages in one image
 """
 
+import utils.session
 import argparse
 import sys
 from pathlib import Path
